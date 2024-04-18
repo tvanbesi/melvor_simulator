@@ -4,7 +4,7 @@
 
 namespace mastery {
 
-namespace Simulation {
+namespace simulation {
 
 // Vector of pairs of <level, action count to reach level>
 using level_up_type = std::vector<std::pair<unsigned int, unsigned int>>;
@@ -22,6 +22,6 @@ struct Report {
 Report simulate_n_actions(const skill_map_type::value_type& skill_map_item, PlayerParam player,
                           const unsigned int action_count);
 
-} // namespace Simulation
+} // namespace simulation
 
 } // namespace mastery

@@ -1,8 +1,8 @@
-#include "Simulation.hpp"
+#include "simulation.hpp"
 
 namespace mastery {
 
-namespace Simulation {
+namespace simulation {
 
 Report simulate_n_actions(const skill_map_type::value_type& skill_map_item, PlayerParam player,
                           const unsigned int action_count)
@@ -32,6 +32,6 @@ Report simulate_n_actions(const skill_map_type::value_type& skill_map_item, Play
     return {action_count, start_xp, end_xp, level_ups};
 }
 
-} // namespace Simulation
+} // namespace simulation
 
 } // namespace mastery
