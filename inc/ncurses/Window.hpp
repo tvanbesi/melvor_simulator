@@ -5,8 +5,6 @@
 
 class Window {
   public:
-    struct Parameters;
-
     Window(const int height, const int width, const int toprow, const int leftcol);
     virtual ~Window() noexcept;
 

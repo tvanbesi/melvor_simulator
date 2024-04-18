@@ -33,8 +33,8 @@ enum class ActionTimeTypeEnum { Fixed, Modifier };
 // STRUCT ==========================================================================================
 
 struct Skill {
-    const unsigned int total_levels;
-    const std::optional<action_time_type> action_time = {};
+    unsigned int total_levels;
+    std::optional<action_time_type> action_time = {};
     unsigned int get_total_items() const;
 };
 

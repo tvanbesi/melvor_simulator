@@ -10,10 +10,10 @@ namespace Simulation {
 using level_up_type = std::vector<std::pair<unsigned int, unsigned int>>;
 
 struct Report {
-    const unsigned int action_count;
-    const unsigned int start_xp;
-    const unsigned int end_xp;
-    const level_up_type level_ups;
+    unsigned int action_count;
+    unsigned int start_xp;
+    unsigned int end_xp;
+    level_up_type level_ups;
     inline unsigned int get_start_level() const { return level_at_xp(start_xp); };
     inline unsigned int get_end_level() const { return level_at_xp(end_xp); };
     inline unsigned int get_xp_gained() const { return end_xp - start_xp; }

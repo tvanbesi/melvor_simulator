@@ -4,5 +4,5 @@
 
 struct MenuItemParam {
     const char* text;
-    const Item_Options opts = O_SELECTABLE;
+    Item_Options opts = O_SELECTABLE;
 };
