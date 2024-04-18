@@ -77,8 +77,8 @@ template <typename T> class AbstractPostable : public Window {
                      const std::vector<element_param>& elems_params);
     virtual ~AbstractPostable() noexcept;
 
-    void post() const;
-    void unpost() const;
+    void start() const;
+    void stop() const;
     void driver(const int code) const;
 
   protected:
@@ -90,6 +90,8 @@ template <typename T> class AbstractPostable : public Window {
   private:
     WINDOW* _sub_window = nullptr;
 
+    void post() const;
+    void unpost() const;
     void init_postable();
     void init_elements(const std::vector<element_param>& elems_params);
 
@@ -133,6 +135,38 @@ template <typename T> inline AbstractPostable<T>::~AbstractPostable() noexcept
     }
 }
 
+template <typename T> inline void AbstractPostable<T>::start() const
+{
+    post();
+    refresh();
+}
+
+template <typename T> inline void AbstractPostable<T>::stop() const
+{
+    unpost();
+    refresh();
+}
+
+template <typename T> inline void AbstractPostable<T>::driver(const int code) const
+{
+    if(int rc = postable_driver(_postable, code); rc == ERR)
+        throw std::runtime_error("postable_driver() failed");
+}
+
+template <typename T>
+inline void AbstractPostable<T>::init_subwindow(const int height, const int width,
+                                                const int rel_top, const int rel_left)
+{
+    if(int rc = keypad(_window, TRUE); rc == ERR)
+        throw std::runtime_error("keypad() failed");
+    if(int rc = set_postable_win(_postable, _window); rc == ERR)
+        throw std::runtime_error("set_postable_win() failed");
+    if(_sub_window = derwin(_window, height, width, rel_top, rel_left); _sub_window == nullptr)
+        throw std::runtime_error("derwin() failed");
+    else if(int rc = set_postable_sub(_postable, _sub_window); rc == ERR)
+        throw std::runtime_error("set_postable_sub() failed");
+}
+
 template <typename T> inline void AbstractPostable<T>::post() const
 {
     if(int rc = post_postable(_postable); rc == ERR)
@@ -143,12 +177,6 @@ template <typename T> inline void AbstractPostable<T>::unpost() const
 {
     if(int rc = unpost_postable(_postable); rc == ERR)
         throw std::runtime_error("unpost_postable() failed");
-}
-
-template <typename T> inline void AbstractPostable<T>::driver(const int code) const
-{
-    if(int rc = postable_driver(_postable, code); rc == ERR)
-        throw std::runtime_error("postable_driver() failed");
 }
 
 template <typename T> inline void AbstractPostable<T>::init_postable()
@@ -170,18 +198,4 @@ inline void AbstractPostable<T>::init_elements(const std::vector<element_param>&
             _elements.push_back(element);
         }
     _elements.push_back(nullptr);
-}
-
-template <typename T>
-inline void AbstractPostable<T>::init_subwindow(const int height, const int width,
-                                                const int rel_top, const int rel_left)
-{
-    if(int rc = keypad(_window, TRUE); rc == ERR)
-        throw std::runtime_error("keypad() failed");
-    if(int rc = set_postable_win(_postable, _window); rc == ERR)
-        throw std::runtime_error("set_postable_win() failed");
-    if(_sub_window = derwin(_window, height, width, rel_top, rel_left); _sub_window == nullptr)
-        throw std::runtime_error("derwin() failed");
-    else if(int rc = set_postable_sub(_postable, _sub_window); rc == ERR)
-        throw std::runtime_error("set_postable_sub() failed");
 }
