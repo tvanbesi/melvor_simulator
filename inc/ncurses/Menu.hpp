@@ -14,10 +14,12 @@ class Menu : public AbstractPostable<menu_pointer> {
          const std::vector<traits::element_param>& choices);
     inline ~Menu() noexcept {}
 
+    std::string select_option() const;
+
+  private:
     traits::element_pointer current_item() const;
     std::string current_item_name() const;
 
-  private:
     // TODO fix mark being displayed in menu subwindow
     const char* _mark = "*";
 };

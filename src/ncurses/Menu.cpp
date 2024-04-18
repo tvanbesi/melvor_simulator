@@ -21,6 +21,29 @@ Menu::Menu(const int height, const int width, const int toprow, const int leftco
         throw std::runtime_error("set_menu_mark() failed");
 }
 
+std::string Menu::select_option() const
+{
+    chtype ch;
+    bool loop = true;
+    while(loop) {
+        ch = get_ch();
+        switch(ch) {
+        case KEY_DOWN:
+            driver(REQ_DOWN_ITEM);
+            break;
+        case KEY_UP:
+            driver(REQ_UP_ITEM);
+            break;
+        case KEY_ENTER:
+        case 10: // TODO KEY_ENTER doesn't work on my system
+            return current_item_name();
+            break;
+        }
+    }
+    throw std::runtime_error("No menu item selected");
+    return "";
+}
+
 ITEM* Menu::current_item() const
 {
     if(ITEM* item = ::current_item(_postable); item == nullptr)
