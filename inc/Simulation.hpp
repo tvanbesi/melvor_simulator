@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Mastery.hpp"
+#include "mastery.hpp"
 
-namespace Mastery {
+namespace mastery {
 
 namespace Simulation {
 
@@ -24,4 +24,4 @@ Report simulate_n_actions(const skill_map_type::value_type& skill_map_item, Play
 
 } // namespace Simulation
 
-} // namespace Mastery
+} // namespace mastery

@@ -1,6 +1,6 @@
-#include "Mastery.hpp"
+#include "mastery.hpp"
 
-namespace Mastery {
+namespace mastery {
 
 const unsigned int MAX_LEVEL = 99;
 
@@ -99,4 +99,4 @@ unsigned int get_xp_per_action(const skill_map_type::value_type& skill_map_item,
     return std::floor(result);
 }
 
-} // namespace Mastery
+} // namespace mastery

@@ -8,7 +8,7 @@
 #include <utility>
 #include <vector>
 
-namespace Mastery {
+namespace mastery {
 
 // FORWARD DECLARATION =============================================================================
 
@@ -64,4 +64,4 @@ bool has_fixed_action_time(const SkillEnum skill);
 unsigned int get_xp_per_action(const skill_map_type::value_type& skill_map_item,
                                const PlayerParam& player_params);
 
-} // namespace Mastery
+} // namespace mastery

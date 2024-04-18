@@ -1,8 +1,8 @@
 #include "Form.hpp"
 #include "Menu.hpp"
 
-#include "Mastery.hpp"
 #include "Simulation.hpp"
+#include "mastery.hpp"
 
 #include <cstring>  // std::strlen
 #include <iostream> // std::cerr
@@ -57,7 +57,7 @@ static SkillEnum select_skill()
 
 static void start_mastery_sim_menu()
 {
-    using namespace Mastery;
+    using namespace mastery;
 
     SkillEnum skill(select_skill());
     bool fixed_action_time = has_fixed_action_time(skill);
@@ -128,7 +128,7 @@ static void start_mastery_sim_menu()
                   .unlocked_actions = static_cast<unsigned int>(std::stoul(buffers[3])),
                   .xp_bonus_factor = std::stod(buffers[4])},
         .action = {.time = action_time}};
-    Simulation::Report report = Mastery::Simulation::simulate_n_actions(
+    Simulation::Report report = Simulation::simulate_n_actions(
         *SKILL_MAP.find(SkillEnum::Woodcutting), player, action_count);
     (void)report;
 }
