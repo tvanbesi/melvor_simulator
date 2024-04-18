@@ -8,11 +8,11 @@ class Window {
     Window(const int height, const int width, const int toprow, const int leftcol);
     virtual ~Window() noexcept;
 
+    inline operator WINDOW*() { return _window; }
+
     void refresh() const;
     void erase() const;
     chtype get_ch() const;
-
-    inline operator WINDOW*() { return _window; }
 
   protected:
     WINDOW* _window = nullptr;
