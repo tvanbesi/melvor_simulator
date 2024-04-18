@@ -1,0 +1,23 @@
+---
+BasedOnStyle: LLVM
+IndentWidth: 4
+---
+Language: Cpp
+
+DerivePointerAlignment: false
+PointerAlignment: Left
+
+ColumnLimit: 100
+
+UseTab: Never
+IndentWidth: 4
+TabWidth: 4
+
+AlignAfterOpenBracket: Align
+BreakBeforeBraces: Stroustrup
+
+SortIncludes: true
+SpaceBeforeParens: Never
+
+Cpp11BracedListStyle: true
+---
