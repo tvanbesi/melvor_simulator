@@ -74,8 +74,8 @@ template <typename T> class AbstractPostable : public Window {
 
     virtual ~AbstractPostable() noexcept;
 
-    void start() const;
-    void stop() const;
+    void activate() const;
+    void deactivate() const;
     void driver(const int code) const;
 
   protected:
@@ -135,13 +135,13 @@ template <typename T> inline AbstractPostable<T>::~AbstractPostable() noexcept
     }
 }
 
-template <typename T> inline void AbstractPostable<T>::start() const
+template <typename T> inline void AbstractPostable<T>::activate() const
 {
     post();
     refresh();
 }
 
-template <typename T> inline void AbstractPostable<T>::stop() const
+template <typename T> inline void AbstractPostable<T>::deactivate() const
 {
     unpost();
     refresh();
