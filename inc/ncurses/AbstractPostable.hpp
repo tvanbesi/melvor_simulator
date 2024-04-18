@@ -123,15 +123,15 @@ inline AbstractPostable<T>::AbstractPostable(const int height, const int width, 
 
 template <typename T> inline AbstractPostable<T>::~AbstractPostable() noexcept
 {
+    if(_postable) {
+        free_postable(_postable);
+        _postable = nullptr;
+    }
     for(auto& field : _elements) {
         if(field) {
             free_element(field);
             field = nullptr;
         }
-    }
-    if(_postable) {
-        free_postable(_postable);
-        _postable = nullptr;
     }
 }
 
