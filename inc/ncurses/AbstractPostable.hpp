@@ -4,7 +4,6 @@
 #include "MenuItemParam.hpp"
 #include "Window.hpp"
 #include <algorithm>
-#include <cstring> // std::strlen
 #include <form.h>
 #include <menu.h>
 #include <sstream>
@@ -53,7 +52,7 @@ template <> struct PostableTraits<menu_pointer> {
 
     static constexpr postable_pointer (*const new_postable)(element_pointer*) = new_menu;
     static constexpr element_pointer (*const new_element)(const element_param& p) =
-        [](const element_param& p) { return new_item(p.text, ""); };
+        [](const element_param& p) { return new_item(p.text.str(), ""); };
     static constexpr int (*const free_postable)(postable_pointer) = free_menu;
     static constexpr int (*const free_element)(element_pointer) = free_item;
     static constexpr int (*const set_postable_win)(postable_pointer, WINDOW*) = set_menu_win;

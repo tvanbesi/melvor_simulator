@@ -9,11 +9,11 @@ Form::Form(const int height, const int width, const int toprow, const int leftco
     if(int rc = scale_form(_postable, &sub_min_rows, &sub_min_cols); rc == ERR)
         throw std::runtime_error("scale_form() failed");
     const std::size_t max_label_len =
-        std::strlen(std::max_element(fields_params.begin(), fields_params.end(),
-                                     [](const element_param& a, const element_param& b) {
-                                         return std::strlen(a.label) < std::strlen(b.label);
-                                     })
-                        ->label);
+        std::max_element(fields_params.begin(), fields_params.end(),
+                         [](const element_param& a, const element_param& b) {
+                             return a.label.len() < b.label.len();
+                         })
+            ->label.len();
     const int total_height = sub_min_rows;
     const int left_shift = max_label_len;
     const int total_width = sub_min_cols + left_shift;
@@ -28,7 +28,7 @@ Form::Form(const int height, const int width, const int toprow, const int leftco
 
     // Write labels
     for(auto& p : fields_params)
-        mvwaddstr(_window, p.toprow, 0, p.label);
+        mvwaddstr(_window, p.toprow, 0, p.label.str());
 
     // Setup field style
     for(auto& field : _elements)

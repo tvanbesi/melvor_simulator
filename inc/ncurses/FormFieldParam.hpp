@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ncurses_string.hpp"
 #include <form.h>
 #include <string>
 
@@ -8,7 +9,7 @@ struct FormFieldParam {
     int width;
     int toprow;
     int leftcol;
-    const char* label;
+    ncurses_string label;
     Field_Options opts = O_ACTIVE | O_EDIT | O_PUBLIC | O_VISIBLE;
     int offscreen = 0;
     int nbuffers = 0;
