@@ -6,32 +6,20 @@
 static void start_main_menu()
 {
     std::vector<Menu::traits::element_param> choices({{"Mastery Simulation"}, {"Exit"}});
-    Menu menu(10, 30, 5, 5, choices);
-    menu.start();
-    chtype ch;
+    Menu menu(3, 20, 1, 1, choices);
+    menu.activate();
     bool loop = true;
     while(loop) {
-        ch = menu.get_ch();
-        switch(ch) {
-        case KEY_DOWN:
-            menu.driver(REQ_DOWN_ITEM);
-            break;
-        case KEY_UP:
-            menu.driver(REQ_UP_ITEM);
-            break;
-        case KEY_ENTER:
-        case 10: // TODO KEY_ENTER doesn't work on my system
-            if(menu.current_item_name() == "Mastery Simulation") {
-                menu.stop();
-                // start_mastery_sim_menu();
-                menu.start();
-            }
-            else if(menu.current_item_name() == "Exit")
-                loop = false;
-            break;
+        std::string option_selected(menu.select_option());
+        if(option_selected == "Mastery Simulation") {
+            menu.deactivate();
+            // start_mastery_sim_menu();
+            menu.activate();
         }
+        else if(option_selected == "Exit")
+            loop = false;
     }
-    menu.stop();
+    menu.deactivate();
 }
 
 int main()
