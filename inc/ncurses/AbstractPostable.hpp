@@ -72,8 +72,6 @@ template <typename T> class AbstractPostable : public Window {
     using element_pointer = typename traits::element_pointer;
     using element_param = typename traits::element_param;
 
-    AbstractPostable(const int height, const int width, const int toprow, const int leftcol,
-                     const std::vector<element_param>& elems_params);
     virtual ~AbstractPostable() noexcept;
 
     void start() const;
@@ -81,6 +79,9 @@ template <typename T> class AbstractPostable : public Window {
     void driver(const int code) const;
 
   protected:
+    AbstractPostable(const int height, const int width, const int toprow, const int leftcol,
+                     const std::vector<element_param>& elems_params);
+
     postable_pointer _postable = nullptr;
     std::vector<element_pointer> _elements; // Last element is nullptr to be ncurses friendly
 
