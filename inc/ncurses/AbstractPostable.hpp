@@ -90,11 +90,12 @@ template <typename T> class AbstractPostable : public Window {
 
   private:
     WINDOW* _sub_window = nullptr;
+    const std::vector<element_param> _elems_params_copy;
 
     void post() const;
     void unpost() const;
     void init_postable();
-    void init_elements(const std::vector<element_param>& elems_params);
+    void init_elements();
 
     // clang-format off
     static constexpr postable_pointer (*const new_postable)(element_pointer*) = traits::new_postable;
@@ -117,9 +118,9 @@ inline AbstractPostable<T>::AbstractPostable(const int height, const int width, 
                                              const int leftcol,
                                              const std::vector<element_param>& elems_params,
                                              const ncurses_string& title)
-    : Window(height, width, toprow, leftcol, title)
+    : Window(height, width, toprow, leftcol, title), _elems_params_copy(elems_params)
 {
-    init_elements(elems_params);
+    init_elements();
     init_postable();
 }
 
@@ -187,12 +188,11 @@ template <typename T> inline void AbstractPostable<T>::init_postable()
         throw std::runtime_error("new_postable() failed");
 }
 
-template <typename T>
-inline void AbstractPostable<T>::init_elements(const std::vector<element_param>& elems_params)
+template <typename T> inline void AbstractPostable<T>::init_elements()
 {
-    std::size_t field_count = elems_params.size();
+    std::size_t field_count = _elems_params_copy.size();
     _elements.reserve(field_count + 1);
-    for(auto& p : elems_params)
+    for(auto& p : _elems_params_copy)
         if(element_pointer element = new_element(p); element == nullptr)
             throw std::runtime_error("new_element() failed");
         else {
