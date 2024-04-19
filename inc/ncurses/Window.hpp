@@ -1,6 +1,5 @@
 #pragma once
 
-#include "ncurses_string.hpp"
 #include <ncurses.h>
 #include <sstream>
 #include <stdexcept>
@@ -8,7 +7,7 @@
 class Window {
   public:
     Window(const int height, const int width, const int toprow, const int leftcol,
-           const ncurses_string& title = "");
+           const std::string& title = "");
     virtual ~Window() noexcept;
 
     inline operator WINDOW*() { return _window; }
@@ -19,7 +18,7 @@ class Window {
 
   protected:
     WINDOW* _window = nullptr;
-    ncurses_string _title;
+    std::string _title;
 
   private:
     Window(Window&) = delete;

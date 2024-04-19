@@ -52,7 +52,7 @@ template <> struct PostableTraits<menu_pointer> {
 
     static constexpr postable_pointer (*const new_postable)(element_pointer*) = new_menu;
     static constexpr element_pointer (*const new_element)(const element_param& p) =
-        [](const element_param& p) { return new_item(p.text.str(), ""); };
+        [](const element_param& p) { return new_item(p.text.c_str(), ""); };
     static constexpr int (*const free_postable)(postable_pointer) = free_menu;
     static constexpr int (*const free_element)(element_pointer) = free_item;
     static constexpr int (*const set_postable_win)(postable_pointer, WINDOW*) = set_menu_win;
@@ -80,8 +80,7 @@ template <typename T> class AbstractPostable : public Window {
 
   protected:
     AbstractPostable(const int height, const int width, const int toprow, const int leftcol,
-                     const std::vector<element_param>& elems_params,
-                     const ncurses_string& title = "");
+                     const std::vector<element_param>& elems_params, const std::string& title = "");
 
     postable_pointer _postable = nullptr;
     std::vector<element_pointer> _elements; // Last element is nullptr to be ncurses friendly
@@ -117,7 +116,7 @@ template <typename T>
 inline AbstractPostable<T>::AbstractPostable(const int height, const int width, const int toprow,
                                              const int leftcol,
                                              const std::vector<element_param>& elems_params,
-                                             const ncurses_string& title)
+                                             const std::string& title)
     : Window(height, width, toprow, leftcol, title), _elems_params_copy(elems_params)
 {
     init_elements();

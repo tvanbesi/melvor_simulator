@@ -2,13 +2,13 @@
 
 Menu::Menu(const int height, const int width, const int toprow, const int leftcol,
            const std::vector<PostableTraits<MENU*>::element_param>& choices,
-           const ncurses_string& title)
+           const std::string& title)
     : AbstractPostable(height, width, toprow, leftcol, choices, title)
 {
     const int top_shift = title.empty() ? 0 : 1; // For the title
     const int total_height = height + top_shift;
-    const int left_shift = std::strlen(_mark);
-    const int total_width = std::max(static_cast<std::size_t>(width + left_shift), title.len());
+    const int left_shift = _mark.length();
+    const int total_width = std::max(static_cast<std::size_t>(width + left_shift), title.length());
     if(width < total_width) {
         std::ostringstream oss;
         oss << "Elements don't fit in menu window. Main window height: " << height
@@ -20,7 +20,7 @@ Menu::Menu(const int height, const int width, const int toprow, const int leftco
     init_subwindow(sub_height, sub_width, top_shift, left_shift);
 
     // Marks
-    if(int rc = set_menu_mark(_postable, _mark); rc == ERR)
+    if(int rc = set_menu_mark(_postable, _mark.c_str()); rc == ERR)
         throw std::runtime_error("set_menu_mark() failed");
 }
 

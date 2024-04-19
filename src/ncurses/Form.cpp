@@ -1,7 +1,7 @@
 #include "Form.hpp"
 
 Form::Form(const int height, const int width, const int toprow, const int leftcol,
-           const std::vector<FormFieldParam>& fields_params, const ncurses_string& title)
+           const std::vector<FormFieldParam>& fields_params, const std::string& title)
     : AbstractPostable(height, width, toprow, leftcol, fields_params, title)
 {
     // Setup subwindow
@@ -11,14 +11,14 @@ Form::Form(const int height, const int width, const int toprow, const int leftco
     const std::size_t max_label_len =
         std::max_element(fields_params.begin(), fields_params.end(),
                          [](const element_param& a, const element_param& b) {
-                             return a.label.len() < b.label.len();
+                             return a.label.length() < b.label.length();
                          })
-            ->label.len();
+            ->label.length();
     const int top_shift = _title.empty() ? 0 : 1; // For the title
     const int total_height = sub_min_rows + top_shift;
     const int left_shift = max_label_len;
     const int total_width =
-        std::max(static_cast<std::size_t>(sub_min_cols + left_shift), title.len());
+        std::max(static_cast<std::size_t>(sub_min_cols + left_shift), title.length());
     if(height < total_height || width < total_width) {
         std::ostringstream oss;
         oss << "Elements don't fit form windows. Main window height: " << height
@@ -30,7 +30,7 @@ Form::Form(const int height, const int width, const int toprow, const int leftco
 
     // Labels
     for(auto& p : fields_params)
-        mvwaddstr(_window, p.toprow + top_shift, 0, p.label.str());
+        mvwaddstr(_window, p.toprow + top_shift, 0, p.label.c_str());
     // Fields style
     for(auto& field : _elements)
         if(int rc = set_field_back(field, A_UNDERLINE); rc == ERR)

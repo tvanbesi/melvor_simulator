@@ -11,7 +11,7 @@ class Menu : public AbstractPostable<menu_pointer> {
     using traits = PostableTraits<menu_pointer>;
 
     Menu(const int height, const int width, const int toprow, const int leftcol,
-         const std::vector<traits::element_param>& choices, const ncurses_string& title = "");
+         const std::vector<traits::element_param>& choices, const std::string& title = "");
     inline ~Menu() noexcept {}
 
     std::string select_option() const;
@@ -21,5 +21,5 @@ class Menu : public AbstractPostable<menu_pointer> {
     std::string current_item_name() const;
 
     // TODO fix mark being displayed in menu subwindow
-    const char* _mark = "*";
+    std::string _mark = "*";
 };

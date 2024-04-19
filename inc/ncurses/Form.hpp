@@ -10,7 +10,7 @@ class Form : public AbstractPostable<form_pointer> {
     using traits = PostableTraits<form_pointer>;
 
     Form(const int height, const int width, const int toprow, const int leftcol,
-         const std::vector<traits::element_param>& fields, const ncurses_string& title = "");
+         const std::vector<traits::element_param>& fields, const std::string& title = "");
     inline ~Form() noexcept {}
 
     std::vector<std::string> fill_form() const;

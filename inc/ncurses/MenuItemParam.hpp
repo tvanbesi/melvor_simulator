@@ -1,9 +1,9 @@
 #pragma once
 
-#include "ncurses_string.hpp"
 #include <menu.h>
+#include <string>
 
 struct MenuItemParam {
-    ncurses_string text;
+    std::string text;
     Item_Options opts = O_SELECTABLE;
 };
