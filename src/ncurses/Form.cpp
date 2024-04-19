@@ -14,7 +14,7 @@ Form::Form(const int height, const int width, const int toprow, const int leftco
                              return a.label.len() < b.label.len();
                          })
             ->label.len();
-    const int top_shift = 1; // For the title
+    const int top_shift = _title.empty() ? 0 : 1; // For the title
     const int total_height = sub_min_rows + top_shift;
     const int left_shift = max_label_len;
     const int total_width =
@@ -28,10 +28,6 @@ Form::Form(const int height, const int width, const int toprow, const int leftco
     }
     init_subwindow(sub_min_rows, sub_min_cols, top_shift, left_shift);
 
-    // Title
-    wattr_on(_window, A_ITALIC, nullptr);
-    mvwaddstr(_window, 0, 0, _title.str());
-    wattr_off(_window, A_ITALIC, nullptr);
     // Labels
     for(auto& p : fields_params)
         mvwaddstr(_window, p.toprow + top_shift, 0, p.label.str());

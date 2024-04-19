@@ -83,7 +83,6 @@ template <typename T> class AbstractPostable : public Window {
                      const std::vector<element_param>& elems_params,
                      const ncurses_string& title = "");
 
-    ncurses_string _title;
     postable_pointer _postable = nullptr;
     std::vector<element_pointer> _elements; // Last element is nullptr to be ncurses friendly
 
@@ -118,7 +117,7 @@ inline AbstractPostable<T>::AbstractPostable(const int height, const int width, 
                                              const int leftcol,
                                              const std::vector<element_param>& elems_params,
                                              const ncurses_string& title)
-    : Window(height, width, toprow, leftcol), _title(title)
+    : Window(height, width, toprow, leftcol, title)
 {
     init_elements(elems_params);
     init_postable();
