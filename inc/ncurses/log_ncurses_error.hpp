@@ -10,7 +10,7 @@
 
 const std::string error_log_filename = "error.log";
 
-// For noexcept functions like destructors
+// For noexcept functions like destructors. Only for <form.h> and <menu.h> errors.
 inline void log_ncurses_error(const std::string& function_name, const int err_code) noexcept
 {
     std::ofstream error_log_file(error_log_filename, std::ofstream::app);
