@@ -94,7 +94,7 @@ unsigned int get_xp_per_action(const skill_map_type::value_type& skill_map_item,
         final_action_time = player.action.time.value();
 
     const double result = (unlocked_action_term + level_term) * final_action_time * 0.5 *
-                          (1.0 + player.skill.xp_bonus_factor);
+                          (1.0 + player.action.xp_bonus_factor);
 
     return std::floor(result);
 }

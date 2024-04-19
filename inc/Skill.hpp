@@ -2,6 +2,7 @@
 
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 enum class SkillEnum {
     Woodcutting,
@@ -20,6 +21,12 @@ enum class SkillEnum {
     Summoning,
     Astrology
 };
+
+extern inline const std::vector<SkillEnum> ALL_SKILL_ENUM = {
+    SkillEnum::Woodcutting, SkillEnum::Fishing,   SkillEnum::Firemaking,   SkillEnum::Cooking,
+    SkillEnum::Mining,      SkillEnum::Smithing,  SkillEnum::Thieving,     SkillEnum::Farming,
+    SkillEnum::Fletching,   SkillEnum::Crafting,  SkillEnum::Runecrafting, SkillEnum::Herblore,
+    SkillEnum::Agility,     SkillEnum::Summoning, SkillEnum::Astrology};
 
 inline std::string to_string(const SkillEnum& e)
 {

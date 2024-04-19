@@ -36,6 +36,49 @@ Form::Form(const int height, const int width, const int toprow, const int leftco
             throw std::runtime_error("set_field_back() failed");
 }
 
+std::vector<std::string> Form::fill_form() const
+{
+    chtype ch;
+    bool loop = true;
+    while(loop) {
+        ch = get_ch();
+        switch(ch) {
+        case KEY_DOWN:
+            driver(REQ_NEXT_FIELD);
+            driver(REQ_END_LINE);
+            break;
+        case KEY_UP:
+            driver(REQ_PREV_FIELD);
+            driver(REQ_END_LINE);
+            break;
+        case KEY_ENTER:
+        case 10: // TODO KEY_ENTER doesn't work on my system
+            driver(REQ_VALIDATION);
+            return field_buffers();
+            break;
+        case KEY_BACKSPACE:
+            driver(REQ_DEL_PREV);
+            break;
+        default:
+            driver(ch);
+            break;
+        }
+    }
+    throw std::runtime_error("Invalid Form");
+    return {};
+}
+
+Form::traits::element_pointer Form::get_field(std::size_t index) const
+{
+    const std::size_t count = field_count(_postable);
+    if(index > count - 1) {
+        std::ostringstream oss;
+        oss << "Index " << index << " is out of range. Form field count: " << count;
+        throw std::out_of_range(oss.str());
+    }
+    return form_fields(_postable)[index];
+}
+
 std::vector<std::string> Form::field_buffers() const
 {
     std::vector<std::string> buffers;

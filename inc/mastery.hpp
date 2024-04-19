@@ -42,12 +42,12 @@ struct PlayerSkillParam {
     unsigned int xp = {};
     unsigned int total_levels = {};
     unsigned int unlocked_actions = {};
-    double xp_bonus_factor = {};
     unsigned int get_level() const;
 };
 
 struct PlayerActionParam {
     std::optional<double> time = {};
+    double xp_bonus_factor = {};
 };
 
 struct PlayerParam {

@@ -13,5 +13,9 @@ class Form : public AbstractPostable<form_pointer> {
          const std::vector<traits::element_param>& fields);
     inline ~Form() noexcept {}
 
+    std::vector<std::string> fill_form() const;
+    element_pointer get_field(std::size_t index) const;
+
+  private:
     std::vector<std::string> field_buffers() const;
 };
