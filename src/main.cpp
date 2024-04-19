@@ -23,13 +23,12 @@ static void start_main_menu(Window& display)
             menu.deactivate();
 
             Player character;
-            std::vector<ncurses_string> display_str_storage;
+            std::vector<std::string> display_str_storage;
             for(auto skill : ALL_SKILL_ENUM) {
                 Form form(menu_win_h, menu_win_w, menu_win_t, menu_win_l,
                           {{1, 10, 0, menu_win_l, "Skill XP "},
                            {1, 10, 1, menu_win_l, "Total Mastery Levels "}},
                           to_string(skill));
-
                 form.activate();
                 auto buffers = form.fill_form();
                 auto& char_mastery = character.mastery_skill(skill);
@@ -53,7 +52,7 @@ static void start_main_menu(Window& display)
                 for(int i = 0; i < pushed_str; ++i) {
                     const std::size_t len = display_str_storage.size();
                     mvwaddstr(display, current_display_line, 0,
-                              display_str_storage[len - pushed_str + i].str());
+                              display_str_storage[len - pushed_str + i].c_str());
                     ++current_display_line;
                 }
                 display.refresh();
