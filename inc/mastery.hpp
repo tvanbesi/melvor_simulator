@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Skill.hpp"
+#include "SkillEnum.hpp"
 #include "common.hpp"
 #include <cmath>
 #include <optional>
@@ -14,7 +14,10 @@ namespace mastery {
 // FORWARD DECLARATION =============================================================================
 
 struct SkillInfo;
-enum class ActionTimeTypeEnum;
+
+// ENUM ============================================================================================
+
+enum class ActionTimeTypeEnum { Fixed, Modifier };
 
 // USING ===========================================================================================
 
@@ -28,10 +31,6 @@ extern const unsigned int MAX_LEVEL;
 extern const skill_map_type SKILL_MAP;
 extern const xp_level_map_type LEVEL_XP_MAP;
 extern const level_unlocks_map_type LEVEL_UNLOCKS;
-
-// ENUM ============================================================================================
-
-enum class ActionTimeTypeEnum { Fixed, Modifier };
 
 // STRUCT ==========================================================================================
 
@@ -105,7 +104,6 @@ unsigned int xp_at_level(const unsigned int level);
 unsigned int level_at_xp(const unsigned int xp);
 bool has_fixed_action_time(const SkillEnum skill);
 unsigned int unlocks_at_level(const SkillEnum skill, const unsigned int level);
-unsigned int get_xp_per_action(const skill_map_type::value_type& skill_map_item,
-                               const PlayerParam& player_params);
+unsigned int get_xp_per_action(const SkillEnum skill, const PlayerParam& player_params);
 
 } // namespace mastery

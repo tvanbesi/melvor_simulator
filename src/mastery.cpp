@@ -137,32 +137,31 @@ unsigned int unlocks_at_level(const SkillEnum skill, const unsigned int level)
     return std::distance(unlocks.begin(), it);
 }
 
-unsigned int get_xp_per_action(const skill_map_type::value_type& skill_map_item,
-                               const PlayerParam& player)
+unsigned int get_xp_per_action(const SkillEnum skill, const PlayerParam& player)
 {
-    const SkillInfo skill(skill_map_item.second);
-    if((skill.action_time() && skill.action_time()->first != ActionTimeTypeEnum::Fixed) &&
+    const SkillInfo skill_info(SKILL_MAP.find(skill)->second);
+    if((skill_info.action_time() && skill_info.action_time()->first != ActionTimeTypeEnum::Fixed) &&
        !player.action.time)
         throw std::invalid_argument(
             "player action time parameter must be set for skill with non-fixed action time: " +
-            to_string(skill_map_item.first));
+            to_string(skill));
 
     const double unlocked_action_factor = static_cast<double>(player.skill.total_levels()) /
-                                          static_cast<double>(skill.total_levels());
+                                          static_cast<double>(skill_info.total_levels());
     const double unlocked_action_term =
         static_cast<double>(player.skill.unlocked_actions()) * unlocked_action_factor;
 
-    const double level_factor = static_cast<double>(skill.total_items()) / 10.0;
+    const double level_factor = static_cast<double>(skill_info.total_items()) / 10.0;
     const double level_term = static_cast<double>(player.skill.level()) * level_factor;
 
     double final_action_time;
-    if(skill.action_time()) {
-        switch(skill.action_time()->first) {
+    if(skill_info.action_time()) {
+        switch(skill_info.action_time()->first) {
         case ActionTimeTypeEnum::Modifier:
-            final_action_time = player.action.time.value() * skill.action_time()->second;
+            final_action_time = player.action.time.value() * skill_info.action_time()->second;
             break;
         case ActionTimeTypeEnum::Fixed:
-            final_action_time = skill.action_time()->second;
+            final_action_time = skill_info.action_time()->second;
             break;
         }
     }
