@@ -16,7 +16,7 @@ static void start_main_menu(Window& display)
 
     std::vector<Menu::traits::element_param> choices(
         {{"Create Player Character"}, {"Mastery Simulation"}, {"Exit"}});
-    Menu menu(menu_win_h, menu_win_w, menu_win_t, menu_win_l, choices);
+    Menu menu(menu_win_h, menu_win_w, menu_win_t, menu_win_l, choices, "Main Menu");
     menu.activate();
     bool loop = true;
     while(loop) {
@@ -29,36 +29,28 @@ static void start_main_menu(Window& display)
                 {1, 10, 0, menu_win_l, "Skill XP "},
                 {1, 10, 1, menu_win_l, "Total Mastery Levels "},
             };
-            Form form(menu_win_h, menu_win_w, menu_win_t, menu_win_l, fields);
             std::vector<ncurses_string> display_str_storage;
             for(auto skill : ALL_SKILL_ENUM) {
-                // TODO add form title bar inside its window in the class
-                ncurses_string s(to_string(skill));
-                move(1, 10);
-                addstr("                    ");
-                move(1, 10);
-                addstr(s.str());
-                refresh();
+                Form form(menu_win_h, menu_win_w, menu_win_t, menu_win_l, fields, to_string(skill));
 
-                set_field_buffer(form.get_field(0), 0, " ");
-                set_field_buffer(form.get_field(1), 0, " ");
                 form.activate();
                 auto buffers = form.fill_form();
                 auto& char_mastery = character.mastery_skill(skill);
-                char_mastery = {.skill = skill,
-                                .xp = static_cast<unsigned int>(std::stoul(buffers[0])),
-                                .total_levels = static_cast<unsigned int>(std::stoul(buffers[1]))};
+                char_mastery = {skill, static_cast<unsigned int>(std::stoul(buffers[0])),
+                                static_cast<unsigned int>(std::stoul(buffers[1]))};
                 form.deactivate();
+                form.erase();
+                form.refresh();
 
                 display_str_storage.push_back("----- " + to_string(skill));
-                display_str_storage.push_back("XP: " + std::to_string(char_mastery.xp));
-                display_str_storage.push_back("Level: " + std::to_string(char_mastery.get_level()));
+                display_str_storage.push_back("XP: " + std::to_string(char_mastery.xp()));
+                display_str_storage.push_back("Level: " + std::to_string(char_mastery.level()));
                 display_str_storage.push_back(
-                    "Mastery Levels: " + std::to_string(char_mastery.total_levels) + "/" +
-                    std::to_string(mastery::SKILL_MAP.at(skill).total_levels));
+                    "Mastery Levels: " + std::to_string(char_mastery.total_levels()) + "/" +
+                    std::to_string(mastery::SKILL_MAP.at(skill).total_levels()));
                 display_str_storage.push_back(
-                    "Actions Unlocked: " + std::to_string(char_mastery.get_unlocked_actions()) +
-                    "/" + std::to_string(mastery::SKILL_MAP.at(skill).get_total_items()));
+                    "Actions Unlocked: " + std::to_string(char_mastery.unlocked_actions()) + "/" +
+                    std::to_string(mastery::SKILL_MAP.at(skill).total_items()));
                 const int pushed_str = 5;
                 static int current_display_line = 0;
                 for(int i = 0; i < pushed_str; ++i) {
@@ -69,11 +61,7 @@ static void start_main_menu(Window& display)
                 }
                 display.refresh();
             }
-            move(1, 10);
-            clrtoeol();
-            refresh();
-            form.erase();
-            form.refresh();
+
             storage::save_entity<decltype(character)>("./res/player.json", character);
             // saved prompt feedback
             // display.erase();
