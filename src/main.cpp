@@ -13,10 +13,8 @@
 static void start_main_menu(Window& display)
 {
     const int menu_win_h = LINES, menu_win_w = COLS / 2, menu_win_t = 2, menu_win_l = 0;
-
-    std::vector<Menu::traits::element_param> choices(
-        {{"Create Player Character"}, {"Mastery Simulation"}, {"Exit"}});
-    Menu menu(menu_win_h, menu_win_w, menu_win_t, menu_win_l, choices, "Main Menu");
+    Menu menu(menu_win_h, menu_win_w, menu_win_t, menu_win_l,
+              {{"Create Player Character"}, {"Mastery Simulation"}, {"Exit"}}, "Main Menu");
     menu.activate();
     bool loop = true;
     while(loop) {
@@ -25,13 +23,12 @@ static void start_main_menu(Window& display)
             menu.deactivate();
 
             Player character;
-            std::vector<Form::traits::element_param> fields = {
-                {1, 10, 0, menu_win_l, "Skill XP "},
-                {1, 10, 1, menu_win_l, "Total Mastery Levels "},
-            };
             std::vector<ncurses_string> display_str_storage;
             for(auto skill : ALL_SKILL_ENUM) {
-                Form form(menu_win_h, menu_win_w, menu_win_t, menu_win_l, fields, to_string(skill));
+                Form form(menu_win_h, menu_win_w, menu_win_t, menu_win_l,
+                          {{1, 10, 0, menu_win_l, "Skill XP "},
+                           {1, 10, 1, menu_win_l, "Total Mastery Levels "}},
+                          to_string(skill));
 
                 form.activate();
                 auto buffers = form.fill_form();
