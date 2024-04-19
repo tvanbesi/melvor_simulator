@@ -4,6 +4,7 @@
 #include "common.hpp"
 #include <cmath>
 #include <optional>
+#include <set>
 #include <stdexcept>
 #include <utility>
 #include <vector>
@@ -19,12 +20,14 @@ enum class ActionTimeTypeEnum;
 
 using skill_map_type = std::map<SkillEnum, Skill>;
 using action_time_type = std::pair<ActionTimeTypeEnum, double>;
+using level_unlocks_map_type = std::map<SkillEnum, std::multiset<unsigned int>>;
 
 // GLOBAL ==========================================================================================
 
 extern const unsigned int MAX_LEVEL;
 extern const skill_map_type SKILL_MAP;
 extern const xp_level_map_type LEVEL_XP_MAP;
+extern const level_unlocks_map_type LEVEL_UNLOCKS;
 
 // ENUM ============================================================================================
 
@@ -39,9 +42,10 @@ struct Skill {
 };
 
 struct PlayerSkillParam {
+    SkillEnum skill;
     unsigned int xp = {};
     unsigned int total_levels = {};
-    unsigned int unlocked_actions = {};
+    unsigned int get_unlocked_actions() const;
     unsigned int get_level() const;
 };
 
@@ -60,7 +64,7 @@ struct PlayerParam {
 unsigned int xp_at_level(const unsigned int level);
 unsigned int level_at_xp(const unsigned int xp);
 bool has_fixed_action_time(const SkillEnum skill);
-
+unsigned int unlocks_at_level(const SkillEnum skill, const unsigned int level);
 unsigned int get_xp_per_action(const skill_map_type::value_type& skill_map_item,
                                const PlayerParam& player_params);
 

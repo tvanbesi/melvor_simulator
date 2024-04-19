@@ -17,7 +17,6 @@ template <> inline void save_entity<Player>(const std::string& filename, const P
         const mastery::PlayerSkillParam& param(entity.mastery_skill(skill));
         j[skill_str]["xp"] = param.xp;
         j[skill_str]["total_levels"] = param.total_levels;
-        j[skill_str]["unlocked_actions"] = param.unlocked_actions;
     }
     save(filename, j);
 }
@@ -28,11 +27,10 @@ template <> inline Player load_entity<Player>(const std::string& filename)
     Player entity;
     for(auto skill : ALL_SKILL_ENUM) {
         std::string skill_str(to_string(skill));
-        entity.mastery_skill(skill) = {.xp = j[skill_str]["xp"],
-                                       .total_levels = j[skill_str]["total_levels"],
-                                       .unlocked_actions = j[skill_str]["unlocked_actions"]};
+        entity.mastery_skill(skill) = {
+            .skill = skill, .xp = j[skill_str]["xp"], .total_levels = j[skill_str]["total_levels"]};
     }
     return entity;
-} // namespace storage
+}
 
 } // namespace storage
