@@ -79,12 +79,12 @@ class AbstractPostable : public Window {
     virtual void unpost() const = 0;
     virtual void driver(const int code) const = 0;
 
+  protected:
     virtual void init_elements() = 0;
-    virtual void init_postable() const = 0;
+    virtual void init_postable() = 0;
     virtual void init_subwindow(const int height, const int width, const int rel_top,
                                 const int rel_left) = 0;
 
-  protected:
     template <typename PostableType> void post(PostableType postable) const;
     template <typename PostableType> void unpost(PostableType postable) const;
     template <typename PostableType> void driver(PostableType postable, const int code) const;
@@ -93,7 +93,7 @@ class AbstractPostable : public Window {
     void init_elements(ElementContainer& elements,
                        const ElementParamContainer& elements_params) const;
     template <typename PostableType, typename ElementContainer>
-    void init_postable(PostableType postable, ElementContainer elements) const;
+    void init_postable(PostableType& postable, ElementContainer& elements) const;
     template <typename PostableType>
     void init_subwindow(PostableType postable, const int height, const int width, const int rel_top,
                         const int rel_left);
@@ -156,7 +156,8 @@ void AbstractPostable::init_elements(ElementContainer& elements,
 }
 
 template <typename PostableType, typename ElementContainer>
-inline void AbstractPostable::init_postable(PostableType postable, ElementContainer elements) const
+inline void AbstractPostable::init_postable(PostableType& postable,
+                                            ElementContainer& elements) const
 {
     using traits = PostableTraits<PostableType>;
     static_assert(std::is_same<ElementContainer, typename traits::element_container>::value,

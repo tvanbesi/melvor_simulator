@@ -23,7 +23,7 @@ class Menu : public AbstractPostable {
     traits::element_param_container _items_params_copy;
 
     void init_elements() override;
-    void init_postable() const override;
+    void init_postable() override;
     void init_subwindow(const int height, const int width, const int rel_top,
                         const int rel_left) override;
 };

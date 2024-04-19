@@ -66,7 +66,7 @@ void Form::init_elements()
                                     decltype(_fields_params_copy)>(_fields, _fields_params_copy);
 }
 
-void Form::init_postable() const
+void Form::init_postable()
 {
     AbstractPostable::init_postable<decltype(_form), decltype(_fields)>(_form, _fields);
 }

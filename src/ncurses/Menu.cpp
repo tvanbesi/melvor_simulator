@@ -52,7 +52,7 @@ void Menu::init_elements()
                                     decltype(_items_params_copy)>(_items, _items_params_copy);
 }
 
-void Menu::init_postable() const
+void Menu::init_postable()
 {
     AbstractPostable::init_postable<decltype(_menu), decltype(_items)>(_menu, _items);
 }
