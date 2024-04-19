@@ -1,10 +1,12 @@
 #include "Menu.hpp"
 
 Menu::Menu(const int height, const int width, const int toprow, const int leftcol,
-           const std::vector<PostableTraits<MENU*>::element_param>& choices,
-           const std::string& title)
-    : AbstractPostable(height, width, toprow, leftcol, choices, title)
+           const traits::element_param_container& items_params, const std::string& title)
+    : AbstractPostable(height, width, toprow, leftcol, title), _items_params_copy(items_params)
 {
+    init_elements();
+    init_postable();
+
     const int top_shift = title.empty() ? 0 : 1; // For the title
     const int total_height = height + top_shift;
     const int left_shift = _mark.length();
@@ -20,39 +22,42 @@ Menu::Menu(const int height, const int width, const int toprow, const int leftco
     init_subwindow(sub_height, sub_width, top_shift, left_shift);
 
     // Marks
-    if(int rc = set_menu_mark(_postable, _mark.c_str()); rc == ERR)
+    if(int rc = set_menu_mark(_menu, _mark.c_str()); rc == ERR)
         throw std::runtime_error("set_menu_mark() failed");
 }
 
-std::string Menu::select_option() const
+Menu::~Menu()
 {
-    chtype ch;
-    bool loop = true;
-    while(loop) {
-        ch = get_ch();
-        switch(ch) {
-        case KEY_DOWN:
-            driver(REQ_DOWN_ITEM);
-            break;
-        case KEY_UP:
-            driver(REQ_UP_ITEM);
-            break;
-        case KEY_ENTER:
-        case 10: // TODO KEY_ENTER doesn't work on my system
-            return current_item_name();
-            break;
+    if(_menu) {
+        traits::free_postable(_menu);
+        _menu = nullptr;
+    }
+    for(auto& item : _items) {
+        if(item) {
+            traits::free_element(item);
+            item = nullptr;
         }
     }
-    throw std::runtime_error("No menu item selected");
-    return "";
 }
 
-ITEM* Menu::current_item() const
+void Menu::post() const { AbstractPostable::post<decltype(_menu)>(_menu); }
+
+void Menu::unpost() const { AbstractPostable::unpost<decltype(_menu)>(_menu); }
+
+void Menu::driver(const int code) const { AbstractPostable::driver<decltype(_menu)>(_menu, code); }
+
+void Menu::init_elements()
 {
-    if(ITEM* item = ::current_item(_postable); item == nullptr)
-        throw std::runtime_error("current_item() failed");
-    else
-        return item;
+    AbstractPostable::init_elements<decltype(_menu), decltype(_items),
+                                    decltype(_items_params_copy)>(_items, _items_params_copy);
 }
 
-std::string Menu::current_item_name() const { return item_name(current_item()); }
+void Menu::init_postable() const
+{
+    AbstractPostable::init_postable<decltype(_menu), decltype(_items)>(_menu, _items);
+}
+
+void Menu::init_subwindow(const int height, const int width, const int rel_top, const int rel_left)
+{
+    AbstractPostable::init_subwindow<decltype(_menu)>(_menu, height, width, rel_top, rel_left);
+}

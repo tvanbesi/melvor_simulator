@@ -1,25 +1,29 @@
 #pragma once
 
 #include "AbstractPostable.hpp"
-#include <menu.h>
-#include <stdexcept>
-#include <string>
-#include <vector>
 
-class Menu : public AbstractPostable<menu_pointer> {
+class Menu : public AbstractPostable {
   public:
     using traits = PostableTraits<menu_pointer>;
 
     Menu(const int height, const int width, const int toprow, const int leftcol,
-         const std::vector<traits::element_param>& choices, const std::string& title = "");
-    inline ~Menu() noexcept {}
+         const traits::element_param_container& items_params, const std::string& title = "");
+    ~Menu() noexcept;
 
-    std::string select_option() const;
+    void post() const override;
+    void unpost() const override;
+    void driver(const int code) const override;
 
   private:
-    traits::element_pointer current_item() const;
-    std::string current_item_name() const;
-
     // TODO fix mark being displayed in menu subwindow
     std::string _mark = "*";
+
+    traits::postable_pointer _menu;
+    traits::element_container _items;
+    traits::element_param_container _items_params_copy;
+
+    void init_elements() override;
+    void init_postable() const override;
+    void init_subwindow(const int height, const int width, const int rel_top,
+                        const int rel_left) override;
 };

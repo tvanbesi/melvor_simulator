@@ -1,21 +1,26 @@
 #pragma once
 
 #include "AbstractPostable.hpp"
-#include "FormFieldParam.hpp"
-#include <form.h>
-#include <vector>
 
-class Form : public AbstractPostable<form_pointer> {
+class Form : public AbstractPostable {
   public:
     using traits = PostableTraits<form_pointer>;
 
     Form(const int height, const int width, const int toprow, const int leftcol,
-         const std::vector<traits::element_param>& fields, const std::string& title = "");
-    inline ~Form() noexcept {}
+         const traits::element_param_container& fields, const std::string& title = "");
+    ~Form() noexcept;
 
-    std::vector<std::string> fill_form() const;
-    element_pointer get_field(std::size_t index) const;
+    void post() const override;
+    void unpost() const override;
+    void driver(const int code) const override;
 
   private:
-    std::vector<std::string> field_buffers() const;
+    traits::postable_pointer _form;
+    traits::element_container _fields;
+    traits::element_param_container _fields_params_copy;
+
+    void init_elements() override;
+    void init_postable() const override;
+    void init_subwindow(const int height, const int width, const int rel_top,
+                        const int rel_left) override;
 };

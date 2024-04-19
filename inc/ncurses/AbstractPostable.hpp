@@ -11,7 +11,7 @@
 #include <type_traits>
 #include <vector>
 
-template <typename T> struct PostableTraits;
+template <typename PostableType> struct PostableTraits;
 
 // FORM TRAITS SPECIALIZATION ======================================================================
 
@@ -23,6 +23,8 @@ template <> struct PostableTraits<form_pointer> {
     using postable_pointer = form_pointer;
     using element_pointer = field_pointer;
     using element_param = field_param;
+    using element_container = std::vector<element_pointer>;
+    using element_param_container = std::vector<element_param>;
 
     static constexpr postable_pointer (*const new_postable)(element_pointer*) = new_form;
     static constexpr element_pointer (*const new_element)(const element_param& p) =
@@ -49,6 +51,8 @@ template <> struct PostableTraits<menu_pointer> {
     using postable_pointer = menu_pointer;
     using element_pointer = item_pointer;
     using element_param = item_param;
+    using element_container = std::vector<element_pointer>;
+    using element_param_container = std::vector<element_param>;
 
     static constexpr postable_pointer (*const new_postable)(element_pointer*) = new_menu;
     static constexpr element_pointer (*const new_element)(const element_param& p) =
@@ -65,138 +69,114 @@ template <> struct PostableTraits<menu_pointer> {
 
 // TEMPLATE DEFINITION =============================================================================
 
-template <typename T> class AbstractPostable : public Window {
+class AbstractPostable : public Window {
   public:
-    using postable_pointer = T;
-    using traits = PostableTraits<postable_pointer>;
-    using element_pointer = typename traits::element_pointer;
-    using element_param = typename traits::element_param;
+    AbstractPostable(const int height, const int width, const int toprow, const int leftcol,
+                     const std::string& title = "");
+    inline virtual ~AbstractPostable() noexcept {}
 
-    virtual ~AbstractPostable() noexcept;
+    virtual void post() const = 0;
+    virtual void unpost() const = 0;
+    virtual void driver(const int code) const = 0;
 
-    void activate() const;
-    void deactivate() const;
-    void driver(const int code) const;
+    virtual void init_elements() = 0;
+    virtual void init_postable() const = 0;
+    virtual void init_subwindow(const int height, const int width, const int rel_top,
+                                const int rel_left) = 0;
 
   protected:
-    AbstractPostable(const int height, const int width, const int toprow, const int leftcol,
-                     const std::vector<element_param>& elems_params, const std::string& title = "");
+    template <typename PostableType> void post(PostableType postable) const;
+    template <typename PostableType> void unpost(PostableType postable) const;
+    template <typename PostableType> void driver(PostableType postable, const int code) const;
 
-    postable_pointer _postable = nullptr;
-    std::vector<element_pointer> _elements; // Last element is nullptr to be ncurses friendly
-
-    void init_subwindow(const int height, const int width, const int rel_top, const int rel_left);
+    template <typename PostableType, typename ElementContainer, typename ElementParamContainer>
+    void init_elements(ElementContainer& elements,
+                       const ElementParamContainer& elements_params) const;
+    template <typename PostableType, typename ElementContainer>
+    void init_postable(PostableType postable, ElementContainer elements) const;
+    template <typename PostableType>
+    void init_subwindow(PostableType postable, const int height, const int width, const int rel_top,
+                        const int rel_left);
 
   private:
     WINDOW* _sub_window = nullptr;
-    const std::vector<element_param> _elems_params_copy;
-
-    void post() const;
-    void unpost() const;
-    void init_postable();
-    void init_elements();
-
-    // clang-format off
-    static constexpr postable_pointer (*const new_postable)(element_pointer*) = traits::new_postable;
-    static constexpr element_pointer (*const new_element)(const element_param&) = traits::new_element;
-    static constexpr int (*const free_postable)(postable_pointer) = traits::free_postable;
-    static constexpr int (*const free_element)(element_pointer) = traits::free_element;
-    static constexpr int (*const set_postable_win)(postable_pointer, WINDOW*) = traits::set_postable_win;
-    static constexpr int (*const set_postable_sub)(postable_pointer, WINDOW*) = traits::set_postable_sub;
-    static constexpr int (*const post_postable)(postable_pointer) = traits::post_postable;
-    static constexpr int (*const unpost_postable)(postable_pointer) = traits::unpost_postable;
-    static constexpr int (*const postable_driver)(postable_pointer, int) = traits::postable_driver;
-    static constexpr int (*const set_element_opts)(element_pointer, Field_Options) = traits::set_element_opts;
-    // clang-format on
 };
 
 // TEMPLATE IMPLEMENTATION =========================================================================
 
-template <typename T>
-inline AbstractPostable<T>::AbstractPostable(const int height, const int width, const int toprow,
-                                             const int leftcol,
-                                             const std::vector<element_param>& elems_params,
-                                             const std::string& title)
-    : Window(height, width, toprow, leftcol, title), _elems_params_copy(elems_params)
+inline AbstractPostable::AbstractPostable(const int height, const int width, const int toprow,
+                                          const int leftcol, const std::string& title)
+    : Window(height, width, toprow, leftcol, title)
 {
-    init_elements();
-    init_postable();
 }
 
-template <typename T> inline AbstractPostable<T>::~AbstractPostable() noexcept
+template <typename PostableType> inline void AbstractPostable::post(PostableType postable) const
 {
-    if(_postable) {
-        free_postable(_postable);
-        _postable = nullptr;
-    }
-    for(auto& field : _elements) {
-        if(field) {
-            free_element(field);
-            field = nullptr;
-        }
-    }
-}
-
-template <typename T> inline void AbstractPostable<T>::activate() const
-{
-    post();
-    refresh();
-}
-
-template <typename T> inline void AbstractPostable<T>::deactivate() const
-{
-    unpost();
-    refresh();
-}
-
-template <typename T> inline void AbstractPostable<T>::driver(const int code) const
-{
-    if(int rc = postable_driver(_postable, code); rc == ERR)
-        throw std::runtime_error("postable_driver() failed");
-}
-
-template <typename T>
-inline void AbstractPostable<T>::init_subwindow(const int height, const int width,
-                                                const int rel_top, const int rel_left)
-{
-    if(int rc = keypad(_window, TRUE); rc == ERR)
-        throw std::runtime_error("keypad() failed");
-    if(int rc = set_postable_win(_postable, _window); rc == ERR)
-        throw std::runtime_error("set_postable_win() failed");
-    if(_sub_window = derwin(_window, height, width, rel_top, rel_left); _sub_window == nullptr)
-        throw std::runtime_error("derwin() failed");
-    else if(int rc = set_postable_sub(_postable, _sub_window); rc == ERR)
-        throw std::runtime_error("set_postable_sub() failed");
-}
-
-template <typename T> inline void AbstractPostable<T>::post() const
-{
-    if(int rc = post_postable(_postable); rc == ERR)
+    using traits = PostableTraits<PostableType>;
+    if(int rc = traits::post_postable(postable); rc == ERR)
         throw std::runtime_error("post_postable() failed");
 }
 
-template <typename T> inline void AbstractPostable<T>::unpost() const
+template <typename PostableType> inline void AbstractPostable::unpost(PostableType postable) const
 {
-    if(int rc = unpost_postable(_postable); rc == ERR)
+    using traits = PostableTraits<PostableType>;
+    if(int rc = traits::unpost_postable(postable); rc == ERR)
         throw std::runtime_error("unpost_postable() failed");
 }
 
-template <typename T> inline void AbstractPostable<T>::init_postable()
+template <typename PostableType>
+inline void AbstractPostable::driver(PostableType postable, const int code) const
 {
-    if(_postable = new_postable(_elements.data()); _postable == nullptr)
+    using traits = PostableTraits<PostableType>;
+    if(int rc = traits::postable_driver(postable, code); rc == ERR)
+        throw std::runtime_error("postable_driver() failed");
+}
+
+template <typename PostableType, typename ElementContainer, typename ElementParamContainer>
+void AbstractPostable::init_elements(ElementContainer& elements,
+                                     const ElementParamContainer& elements_params) const
+{
+    using traits = PostableTraits<PostableType>;
+    static_assert(
+        std::is_same<ElementContainer, typename traits::element_container>::value ||
+            std::is_same<ElementParamContainer, typename traits::element_param_container>::value,
+        "AbstractPostable::init_elements is only defined for <menu_pointer, "
+        "std::vector<item_pointer>, std::vector<item_param>> or <form_pointer, "
+        "std::vector<field_pointer>, std::vector<field_param>>");
+    std::size_t elem_count = elements_params.size();
+    elements.reserve(elem_count + 1);
+    for(auto& p : elements_params)
+        if(typename traits::element_pointer element = traits::new_element(p); element == nullptr)
+            throw std::runtime_error("new_element() failed");
+        else {
+            traits::set_element_opts(element, p.opts);
+            elements.push_back(element);
+        }
+    elements.push_back(nullptr);
+}
+
+template <typename PostableType, typename ElementContainer>
+inline void AbstractPostable::init_postable(PostableType postable, ElementContainer elements) const
+{
+    using traits = PostableTraits<PostableType>;
+    static_assert(std::is_same<ElementContainer, typename traits::element_container>::value,
+                  "AbstractPostable::init_postable is only defined for <menu_pointer, "
+                  "std::vector<item_pointer>> or <form_pointer, std::vector<field_pointer>>");
+    if(postable = traits::new_postable(elements.data()); postable == nullptr)
         throw std::runtime_error("new_postable() failed");
 }
 
-template <typename T> inline void AbstractPostable<T>::init_elements()
+template <typename PostableType>
+inline void AbstractPostable::init_subwindow(PostableType postable, const int height,
+                                             const int width, const int rel_top, const int rel_left)
 {
-    std::size_t field_count = _elems_params_copy.size();
-    _elements.reserve(field_count + 1);
-    for(auto& p : _elems_params_copy)
-        if(element_pointer element = new_element(p); element == nullptr)
-            throw std::runtime_error("new_element() failed");
-        else {
-            set_element_opts(element, p.opts);
-            _elements.push_back(element);
-        }
-    _elements.push_back(nullptr);
+    using traits = PostableTraits<PostableType>;
+    if(int rc = keypad(_window, TRUE); rc == ERR)
+        throw std::runtime_error("keypad() failed");
+    if(int rc = traits::set_postable_win(postable, _window); rc == ERR)
+        throw std::runtime_error("set_postable_win() failed");
+    if(_sub_window = derwin(_window, height, width, rel_top, rel_left); _sub_window == nullptr)
+        throw std::runtime_error("derwin() failed");
+    else if(int rc = traits::set_postable_sub(postable, _sub_window); rc == ERR)
+        throw std::runtime_error("set_postable_sub() failed");
 }
