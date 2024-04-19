@@ -113,14 +113,14 @@ inline AbstractPostable::AbstractPostable(const int height, const int width, con
 template <typename PostableType> inline void AbstractPostable::post(PostableType postable) const
 {
     using traits = PostableTraits<PostableType>;
-    if(int rc = traits::post_postable(postable); rc == ERR)
+    if(int rc = traits::post_postable(postable); rc != E_OK)
         throw std::runtime_error("post_postable() failed");
 }
 
 template <typename PostableType> inline void AbstractPostable::unpost(PostableType postable) const
 {
     using traits = PostableTraits<PostableType>;
-    if(int rc = traits::unpost_postable(postable); rc == ERR)
+    if(int rc = traits::unpost_postable(postable); rc != E_OK)
         throw std::runtime_error("unpost_postable() failed");
 }
 
@@ -128,7 +128,7 @@ template <typename PostableType>
 inline void AbstractPostable::driver(PostableType postable, const int code) const
 {
     using traits = PostableTraits<PostableType>;
-    if(int rc = traits::postable_driver(postable, code); rc == ERR)
+    if(int rc = traits::postable_driver(postable, code); rc != E_OK)
         throw std::runtime_error("postable_driver() failed");
 }
 
@@ -172,12 +172,12 @@ inline void AbstractPostable::init_subwindow(PostableType postable, const int he
                                              const int width, const int rel_top, const int rel_left)
 {
     using traits = PostableTraits<PostableType>;
-    if(int rc = keypad(_window, TRUE); rc == ERR)
+    if(int rc = keypad(_window, TRUE); rc != OK)
         throw std::runtime_error("keypad() failed");
-    if(int rc = traits::set_postable_win(postable, _window); rc == ERR)
+    if(int rc = traits::set_postable_win(postable, _window); rc != E_OK)
         throw std::runtime_error("set_postable_win() failed");
     if(_sub_window = derwin(_window, height, width, rel_top, rel_left); _sub_window == nullptr)
         throw std::runtime_error("derwin() failed");
-    else if(int rc = traits::set_postable_sub(postable, _sub_window); rc == ERR)
+    else if(int rc = traits::set_postable_sub(postable, _sub_window); rc != E_OK)
         throw std::runtime_error("set_postable_sub() failed");
 }

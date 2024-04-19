@@ -32,13 +32,13 @@ Window::~Window()
 
 void Window::refresh() const
 {
-    if(int rc = wrefresh(_window); rc == ERR)
+    if(int rc = wrefresh(_window); rc != OK)
         throw std::runtime_error("wrefresh() failed");
 }
 
 void Window::erase() const
 {
-    if(int rc = werase(_window); rc == ERR)
+    if(int rc = werase(_window); rc != OK)
         throw std::runtime_error("werase() failed");
 }
 

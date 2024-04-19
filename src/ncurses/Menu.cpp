@@ -22,7 +22,7 @@ Menu::Menu(const int height, const int width, const int toprow, const int leftco
     init_subwindow(sub_height, sub_width, top_shift, left_shift);
 
     // Marks
-    if(int rc = set_menu_mark(_menu, _mark.c_str()); rc == ERR)
+    if(int rc = set_menu_mark(_menu, _mark.c_str()); rc != E_OK)
         throw std::runtime_error("set_menu_mark() failed");
 }
 

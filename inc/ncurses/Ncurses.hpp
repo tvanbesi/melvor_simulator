@@ -14,7 +14,7 @@ class Ncurses {
 
     inline ~Ncurses() noexcept
     {
-        if(int rc = endwin(); rc != E_OK)
+        if(int rc = endwin(); rc != OK)
             log_ncurses_error("endwin", rc);
     }
 };

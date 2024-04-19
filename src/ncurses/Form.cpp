@@ -9,7 +9,7 @@ Form::Form(const int height, const int width, const int toprow, const int leftco
 
     // Setup subwindow
     int sub_min_rows, sub_min_cols;
-    if(int rc = scale_form(_form, &sub_min_rows, &sub_min_cols); rc == ERR)
+    if(int rc = scale_form(_form, &sub_min_rows, &sub_min_cols); rc != E_OK)
         throw std::runtime_error("scale_form() failed");
     const std::size_t max_label_len =
         std::max_element(_fields_params_copy.begin(), _fields_params_copy.end(),
@@ -36,7 +36,7 @@ Form::Form(const int height, const int width, const int toprow, const int leftco
         mvwaddstr(_window, p.toprow + top_shift, 0, p.label.c_str());
     // Fields style
     for(auto& field : _fields)
-        if(int rc = set_field_back(field, A_UNDERLINE); rc == ERR)
+        if(int rc = set_field_back(field, A_UNDERLINE); rc != E_OK)
             throw std::runtime_error("set_field_back() failed");
 }
 
