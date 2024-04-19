@@ -12,9 +12,19 @@ class Player {
 
   private:
     std::map<SkillEnum, mastery::PlayerSkillParam> _mastery_skills = {
-        {SkillEnum::Woodcutting, {}}, {SkillEnum::Fishing, {}},      {SkillEnum::Firemaking, {}},
-        {SkillEnum::Cooking, {}},     {SkillEnum::Mining, {}},       {SkillEnum::Smithing, {}},
-        {SkillEnum::Thieving, {}},    {SkillEnum::Farming, {}},      {SkillEnum::Fletching, {}},
-        {SkillEnum::Crafting, {}},    {SkillEnum::Runecrafting, {}}, {SkillEnum::Herblore, {}},
-        {SkillEnum::Agility, {}},     {SkillEnum::Summoning, {}},    {SkillEnum::Astrology, {}}};
+        {SkillEnum::Woodcutting, {SkillEnum::Woodcutting}},
+        {SkillEnum::Fishing, {SkillEnum::Fishing}},
+        {SkillEnum::Firemaking, {SkillEnum::Firemaking}},
+        {SkillEnum::Cooking, {SkillEnum::Cooking}},
+        {SkillEnum::Mining, {SkillEnum::Mining}},
+        {SkillEnum::Smithing, {SkillEnum::Smithing}},
+        {SkillEnum::Thieving, {SkillEnum::Thieving}},
+        {SkillEnum::Farming, {SkillEnum::Farming}},
+        {SkillEnum::Fletching, {SkillEnum::Fletching}},
+        {SkillEnum::Crafting, {SkillEnum::Crafting}},
+        {SkillEnum::Runecrafting, {SkillEnum::Runecrafting}},
+        {SkillEnum::Herblore, {SkillEnum::Herblore}},
+        {SkillEnum::Agility, {SkillEnum::Agility}},
+        {SkillEnum::Summoning, {SkillEnum::Summoning}},
+        {SkillEnum::Astrology, {SkillEnum::Astrology}}};
 };

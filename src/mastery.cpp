@@ -106,14 +106,12 @@ const level_unlocks_map_type LEVEL_UNLOCKS = {
                             65, 70, 80, 80, 90, 90, 100, 100, 105, 105, 110, 110, 115, 115}},
     {SkillEnum::Astrology, {1, 10, 20, 30, 40, 45, 50, 60, 70, 80, 90, 95, 100, 105, 110, 115}}};
 
-unsigned int Skill::get_total_items() const { return total_levels / 99; };
+void PlayerSkillParam::update_level() { _level = level_at_xp(_xp); }
 
-unsigned int PlayerSkillParam::get_unlocked_actions() const
+void PlayerSkillParam::update_unlocked_actions()
 {
-    return unlocks_at_level(skill, get_level());
+    _unlocked_actions = unlocks_at_level(_skill, _level);
 }
-
-unsigned int PlayerSkillParam::get_level() const { return level_at_xp(xp); };
 
 unsigned int xp_at_level(const unsigned int level) { return LEVEL_XP_MAP.at(level); }
 
@@ -128,8 +126,8 @@ unsigned int level_at_xp(const unsigned int xp)
 bool has_fixed_action_time(const SkillEnum skill)
 {
     const auto skill_map_item = SKILL_MAP.at(skill);
-    return skill_map_item.action_time &&
-           skill_map_item.action_time->first == ActionTimeTypeEnum::Fixed;
+    return skill_map_item.action_time() &&
+           skill_map_item.action_time()->first == ActionTimeTypeEnum::Fixed;
 }
 
 unsigned int unlocks_at_level(const SkillEnum skill, const unsigned int level)
@@ -142,29 +140,29 @@ unsigned int unlocks_at_level(const SkillEnum skill, const unsigned int level)
 unsigned int get_xp_per_action(const skill_map_type::value_type& skill_map_item,
                                const PlayerParam& player)
 {
-    const Skill skill(skill_map_item.second);
-    if((skill.action_time && skill.action_time->first != ActionTimeTypeEnum::Fixed) &&
+    const SkillInfo skill(skill_map_item.second);
+    if((skill.action_time() && skill.action_time()->first != ActionTimeTypeEnum::Fixed) &&
        !player.action.time)
         throw std::invalid_argument(
             "player action time parameter must be set for skill with non-fixed action time: " +
             to_string(skill_map_item.first));
 
-    const double unlocked_action_factor =
-        static_cast<double>(player.skill.total_levels) / static_cast<double>(skill.total_levels);
+    const double unlocked_action_factor = static_cast<double>(player.skill.total_levels()) /
+                                          static_cast<double>(skill.total_levels());
     const double unlocked_action_term =
-        static_cast<double>(player.skill.get_unlocked_actions()) * unlocked_action_factor;
+        static_cast<double>(player.skill.unlocked_actions()) * unlocked_action_factor;
 
-    const double level_factor = static_cast<double>(skill.get_total_items()) / 10.0;
-    const double level_term = static_cast<double>(player.skill.get_level()) * level_factor;
+    const double level_factor = static_cast<double>(skill.total_items()) / 10.0;
+    const double level_term = static_cast<double>(player.skill.level()) * level_factor;
 
     double final_action_time;
-    if(skill.action_time) {
-        switch(skill.action_time->first) {
+    if(skill.action_time()) {
+        switch(skill.action_time()->first) {
         case ActionTimeTypeEnum::Modifier:
-            final_action_time = player.action.time.value() * skill.action_time->second;
+            final_action_time = player.action.time.value() * skill.action_time()->second;
             break;
         case ActionTimeTypeEnum::Fixed:
-            final_action_time = skill.action_time->second;
+            final_action_time = skill.action_time()->second;
             break;
         }
     }
