@@ -29,12 +29,14 @@ Menu::Menu(const int height, const int width, const int toprow, const int leftco
 Menu::~Menu()
 {
     if(_menu) {
-        traits::free_postable(_menu);
+        if(int rc = traits::free_postable(_menu); rc != E_OK)
+            log_ncurses_error("free_menu", rc);
         _menu = nullptr;
     }
     for(auto& item : _items) {
         if(item) {
-            traits::free_element(item);
+            if(int rc = traits::free_element(item); rc != E_OK)
+                log_ncurses_error("free_item", rc);
             item = nullptr;
         }
     }

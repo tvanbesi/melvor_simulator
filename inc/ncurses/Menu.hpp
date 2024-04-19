@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AbstractPostable.hpp"
+#include "log_ncurses_error.hpp"
 
 class Menu : public AbstractPostable {
   public:

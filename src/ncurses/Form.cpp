@@ -43,12 +43,14 @@ Form::Form(const int height, const int width, const int toprow, const int leftco
 Form::~Form() noexcept
 {
     if(_form) {
-        traits::free_postable(_form);
+        if(int rc = traits::free_postable(_form); rc != E_OK)
+            log_ncurses_error("free_form", rc);
         _form = nullptr;
     }
     for(auto& field : _fields) {
         if(field) {
-            traits::free_element(field);
+            if(int rc = traits::free_element(field); rc != E_OK)
+                log_ncurses_error("free_field", rc);
             field = nullptr;
         }
     }
