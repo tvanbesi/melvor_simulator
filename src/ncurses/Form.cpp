@@ -1,8 +1,8 @@
 #include "Form.hpp"
 
 Form::Form(const int height, const int width, const int toprow, const int leftcol,
-           const std::vector<FormFieldParam>& fields_params)
-    : AbstractPostable(height, width, toprow, leftcol, fields_params)
+           const std::vector<FormFieldParam>& fields_params, const ncurses_string& title)
+    : AbstractPostable(height, width, toprow, leftcol, fields_params, title)
 {
     // Setup subwindow
     int sub_min_rows, sub_min_cols;
@@ -14,23 +14,28 @@ Form::Form(const int height, const int width, const int toprow, const int leftco
                              return a.label.len() < b.label.len();
                          })
             ->label.len();
-    const int total_height = sub_min_rows;
+    const int top_shift = 1; // For the title
+    const int total_height = sub_min_rows + top_shift;
     const int left_shift = max_label_len;
-    const int total_width = sub_min_cols + left_shift;
+    const int total_width =
+        std::max(static_cast<std::size_t>(sub_min_cols + left_shift), title.len());
     if(height < total_height || width < total_width) {
         std::ostringstream oss;
-        oss << "Labels and fields don't fit form windows. Main window height: " << height
+        oss << "Elements don't fit form windows. Main window height: " << height
             << ", width: " << width << ". Needed height: " << total_height
             << ", width: " << total_width;
         throw std::runtime_error(oss.str());
     }
-    init_subwindow(sub_min_rows, sub_min_cols, 0, left_shift);
+    init_subwindow(sub_min_rows, sub_min_cols, top_shift, left_shift);
 
-    // Write labels
+    // Title
+    wattr_on(_window, A_ITALIC, nullptr);
+    mvwaddstr(_window, 0, 0, _title.str());
+    wattr_off(_window, A_ITALIC, nullptr);
+    // Labels
     for(auto& p : fields_params)
-        mvwaddstr(_window, p.toprow, 0, p.label.str());
-
-    // Setup field style
+        mvwaddstr(_window, p.toprow + top_shift, 0, p.label.str());
+    // Fields style
     for(auto& field : _elements)
         if(int rc = set_field_back(field, A_UNDERLINE); rc == ERR)
             throw std::runtime_error("set_field_back() failed");

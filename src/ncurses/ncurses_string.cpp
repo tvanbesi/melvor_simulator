@@ -33,6 +33,8 @@ ncurses_string& ncurses_string::operator=(ncurses_string&& lhs)
 
 std::size_t ncurses_string::len() const { return std::strlen(_str); }
 
+bool ncurses_string::empty() const { return len() == 0; }
+
 char* ncurses_string::str() const { return _str; }
 
 char* ncurses_string::copy(const char* src)

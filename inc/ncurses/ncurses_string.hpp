@@ -15,6 +15,7 @@ class ncurses_string {
     ncurses_string& operator=(ncurses_string&& lhs);
 
     std::size_t len() const;
+    bool empty() const;
     char* str() const;
 
   private:

@@ -11,7 +11,7 @@ class Menu : public AbstractPostable<menu_pointer> {
     using traits = PostableTraits<menu_pointer>;
 
     Menu(const int height, const int width, const int toprow, const int leftcol,
-         const std::vector<traits::element_param>& choices);
+         const std::vector<traits::element_param>& choices, const ncurses_string& title = "");
     inline ~Menu() noexcept {}
 
     std::string select_option() const;

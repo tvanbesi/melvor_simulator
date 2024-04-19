@@ -1,22 +1,29 @@
 #include "Menu.hpp"
 
 Menu::Menu(const int height, const int width, const int toprow, const int leftcol,
-           const std::vector<PostableTraits<MENU*>::element_param>& choices)
-    : AbstractPostable(height, width, toprow, leftcol, choices)
+           const std::vector<PostableTraits<MENU*>::element_param>& choices,
+           const ncurses_string& title)
+    : AbstractPostable(height, width, toprow, leftcol, choices, title)
 {
-    const int total_height = height;
+    const int top_shift = 1; // For the title
+    const int total_height = height + top_shift;
     const int left_shift = std::strlen(_mark);
-    const int total_width = width + left_shift;
+    const int total_width = std::max(static_cast<std::size_t>(width + left_shift), title.len());
     if(width < total_width) {
         std::ostringstream oss;
-        oss << "Mark and items don't fit in menu window. Main window height: " << height
+        oss << "Elements don't fit in menu window. Main window height: " << height
             << ", width: " << width << ". Needed height: " << total_height
             << ", width: " << total_width;
     }
-    const int sub_height = height;
+    const int sub_height = height - top_shift;
     const int sub_width = width - left_shift;
-    init_subwindow(sub_height, sub_width, 0, left_shift);
+    init_subwindow(sub_height, sub_width, top_shift, left_shift);
 
+    // Title
+    wattr_on(_window, A_ITALIC, nullptr);
+    mvwaddstr(_window, 0, 0, _title.str());
+    wattr_off(_window, A_ITALIC, nullptr);
+    // Marks
     if(int rc = set_menu_mark(_postable, _mark); rc == ERR)
         throw std::runtime_error("set_menu_mark() failed");
 }
