@@ -8,33 +8,40 @@ Form::Form(const int height, const int width, const int toprow, const int leftco
     init_postable();
 
     // Setup subwindow
-    int sub_min_rows, sub_min_cols;
-    if(int rc = scale_form(_form, &sub_min_rows, &sub_min_cols); rc != E_OK)
+
+    int subwin_height, subwin_width;
+    if(int rc = scale_form(_form, &subwin_height, &subwin_width); rc != E_OK)
         throw std::runtime_error("scale_form() failed");
+    const int top_shift = _title.empty() ? 0 : 1;
+    const int needed_height = subwin_height + top_shift;
     const std::size_t max_label_len =
         std::max_element(_fields_params_copy.begin(), _fields_params_copy.end(),
                          [](const traits::element_param& a, const traits::element_param& b) {
                              return a.label.length() < b.label.length();
                          })
             ->label.length();
-    const int top_shift = _title.empty() ? 0 : 1; // For the title
-    const int total_height = sub_min_rows + top_shift;
-    const int left_shift = max_label_len;
-    const int total_width =
-        std::max(static_cast<std::size_t>(sub_min_cols + left_shift), title.length());
-    if(height < total_height || width < total_width) {
+    const int left_shift = std::max({
+        static_cast<int>(max_label_len),
+        static_cast<int>(title.length()) - subwin_width,
+        0,
+    });
+    const int needed_width = subwin_width + left_shift;
+    if(height < needed_height || width < needed_width) {
         std::ostringstream oss;
-        oss << "Elements don't fit form windows. Main window height: " << height
-            << ", width: " << width << ". Needed height: " << total_height
-            << ", width: " << total_width;
+        oss << "Not enough space for form windows. Main window height: " << height
+            << ", width: " << width << ". Needed height: " << needed_height
+            << ", width: " << needed_width;
         throw std::runtime_error(oss.str());
     }
-    init_subwindow(sub_min_rows, sub_min_cols, top_shift, left_shift);
+    init_subwindow(subwin_height, subwin_width, top_shift, left_shift);
 
     // Labels
+
     for(auto& p : _fields_params_copy)
         mvwaddstr(_window, p.toprow + top_shift, 0, p.label.c_str());
+
     // Fields style
+
     for(auto& field : _fields)
         if(int rc = set_field_back(field, A_UNDERLINE); rc != E_OK)
             throw std::runtime_error("set_field_back() failed");

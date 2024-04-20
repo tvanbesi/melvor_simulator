@@ -16,8 +16,7 @@ class Menu : public AbstractPostable {
     void driver(const int code) const override;
 
   private:
-    // TODO fix mark being displayed in menu subwindow
-    std::string _mark = "*";
+    const std::string _mark = " * ";
 
     traits::postable_pointer _menu;
     traits::element_container _items;

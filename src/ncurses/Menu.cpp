@@ -7,23 +7,30 @@ Menu::Menu(const int height, const int width, const int toprow, const int leftco
     init_elements();
     init_postable();
 
-    const int top_shift = title.empty() ? 0 : 1; // For the title
-    const int total_height = height + top_shift;
-    const int left_shift = _mark.length();
-    const int total_width = std::max(static_cast<std::size_t>(width + left_shift), title.length());
-    if(width < total_width) {
-        std::ostringstream oss;
-        oss << "Elements don't fit in menu window. Main window height: " << height
-            << ", width: " << width << ". Needed height: " << total_height
-            << ", width: " << total_width;
-    }
-    const int sub_height = height - top_shift;
-    const int sub_width = width - left_shift;
-    init_subwindow(sub_height, sub_width, top_shift, left_shift);
-
-    // Marks
     if(int rc = set_menu_mark(_menu, _mark.c_str()); rc != E_OK)
         throw std::runtime_error("set_menu_mark() failed");
+
+    // Setup subwindow
+
+    int subwin_height, subwin_width;
+    if(int rc = scale_menu(_menu, &subwin_height, &subwin_width); rc != E_OK)
+        throw std::runtime_error("scale_menu() failed");
+    const int top_shift = title.empty() ? 0 : 1; // For the title
+    const int needed_height = subwin_height + top_shift;
+    const int left_shift = std::max({
+        static_cast<int>(_mark.length()),
+        static_cast<int>(title.length()) - subwin_width,
+        0,
+    });
+    const int needed_width = subwin_width + left_shift;
+    if(height < needed_height || width < needed_width) {
+        std::ostringstream oss;
+        oss << "Not enough space for menu windows. Main window height: " << height
+            << ", width: " << width << ". Needed height: " << needed_height
+            << ", width: " << needed_width;
+        throw std::runtime_error(oss.str());
+    }
+    init_subwindow(subwin_height, subwin_width, top_shift, left_shift);
 }
 
 Menu::~Menu()
