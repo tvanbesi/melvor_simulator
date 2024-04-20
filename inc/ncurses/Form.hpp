@@ -8,8 +8,8 @@ class Form : public AbstractPostable {
     using traits = PostableTraits<form_pointer>;
 
     Form(const int height, const int width, const int toprow, const int leftcol,
-         const traits::element_param_container& fields, const std::string& title = "",
-         bool box = true);
+         const int field_width, const traits::element_param_container& fields,
+         const std::string& title = "", bool box = true);
     ~Form() noexcept;
 
     void post() const override;

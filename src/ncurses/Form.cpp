@@ -1,10 +1,21 @@
 #include "Form.hpp"
 
 Form::Form(const int height, const int width, const int toprow, const int leftcol,
-           const traits::element_param_container& fields_params, const std::string& title, bool box)
+           const int field_width, const traits::element_param_container& fields_params,
+           const std::string& title, bool box)
     : AbstractPostable(height, width, toprow, leftcol, title, box),
       _fields_params_copy(fields_params)
 {
+    if(field_width >= width)
+        throw std::invalid_argument("Field width argument: " + std::to_string(field_width) +
+                                    " must not be >= width argument: " + std::to_string(width));
+
+    int field_row = 0;
+    for(auto& field_param : _fields_params_copy) {
+        field_param._width = field_width;
+        field_param._row = field_row++;
+    }
+
     init_elements();
     init_postable();
 
@@ -38,7 +49,7 @@ Form::Form(const int height, const int width, const int toprow, const int leftco
     // Labels
 
     for(auto& p : _fields_params_copy)
-        mvwaddstr(_window, p.toprow + top_shift, border_size, p.label.c_str());
+        mvwaddstr(_window, p._row + top_shift, border_size, p.label.c_str());
 
     // Fields style
 
