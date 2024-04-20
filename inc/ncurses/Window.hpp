@@ -7,7 +7,7 @@
 class Window {
   public:
     Window(const int height, const int width, const int toprow, const int leftcol,
-           const std::string& title = "");
+           const std::string& title = "", bool box = true);
     virtual ~Window() noexcept;
 
     inline operator WINDOW*() { return _window; }

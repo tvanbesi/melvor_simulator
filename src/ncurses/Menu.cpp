@@ -1,8 +1,8 @@
 #include "Menu.hpp"
 
 Menu::Menu(const int height, const int width, const int toprow, const int leftcol,
-           const traits::element_param_container& items_params, const std::string& title)
-    : AbstractPostable(height, width, toprow, leftcol, title), _items_params_copy(items_params)
+           const traits::element_param_container& items_params, const std::string& title, bool box)
+    : AbstractPostable(height, width, toprow, leftcol, title, box), _items_params_copy(items_params)
 {
     init_elements();
     init_postable();
@@ -15,14 +15,13 @@ Menu::Menu(const int height, const int width, const int toprow, const int leftco
     int subwin_height, subwin_width;
     if(int rc = scale_menu(_menu, &subwin_height, &subwin_width); rc != E_OK)
         throw std::runtime_error("scale_menu() failed");
-    const int top_shift = title.empty() ? 0 : 1; // For the title
-    const int needed_height = subwin_height + top_shift;
-    const int left_shift = std::max({
-        static_cast<int>(_mark.length()),
-        static_cast<int>(title.length()) - subwin_width,
-        0,
-    });
-    const int needed_width = subwin_width + left_shift;
+    const int title_height = (_title.empty() ? 0 : 1), title_width = _title.length(),
+              border_size = (box ? 1 : 0), mark_width = _mark.length();
+    const int top_shift = title_height + border_size;
+    const int left_shift = mark_width + border_size;
+    const int needed_height = subwin_height + title_height + border_size * 2;
+    // const int needed_width = subwin_width + (box ? 2 : 0);
+    const int needed_width = std::max(subwin_width, title_width) + border_size * 2;
     if(height < needed_height || width < needed_width) {
         std::ostringstream oss;
         oss << "Not enough space for menu windows. Main window height: " << height

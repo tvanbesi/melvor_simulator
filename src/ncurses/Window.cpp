@@ -1,14 +1,14 @@
 #include "Window.hpp"
 
 Window::Window(const int height, const int width, const int toprow, const int leftcol,
-               const std::string& title)
+               const std::string& title, bool box)
     : _title(title)
 {
-    const int needed_height = title.empty() ? 0 : 1;
-    const int needed_width = _title.length();
+    const int needed_height = (title.empty() ? 0 : 1) + (box ? 2 : 0);
+    const int needed_width = _title.length() + (box ? 2 : 0);
     if(height < needed_height || width < needed_width) {
         std::ostringstream oss;
-        oss << "Elements won't fit in window. Window height: " << height << ", width: " << width
+        oss << "Not enough space in window. Window height: " << height << ", width: " << width
             << ". Needed height: " << needed_height << ", width: " << needed_width;
         throw std::runtime_error(oss.str());
     }
@@ -20,6 +20,9 @@ Window::Window(const int height, const int width, const int toprow, const int le
     wattr_on(_window, A_ITALIC, nullptr);
     mvwaddstr(_window, 0, x, _title.c_str());
     wattr_off(_window, A_ITALIC, nullptr);
+
+    if(int rc; box && (rc = ::box(_window, 0, 0)) != OK)
+        throw std::runtime_error("box() failed");
 }
 
 Window::~Window()

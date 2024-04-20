@@ -72,7 +72,7 @@ template <> struct PostableTraits<menu_pointer> {
 class AbstractPostable : public Window {
   public:
     AbstractPostable(const int height, const int width, const int toprow, const int leftcol,
-                     const std::string& title = "");
+                     const std::string& title = "", bool box = true);
     inline virtual ~AbstractPostable() noexcept {}
 
     virtual void post() const = 0;
@@ -105,8 +105,8 @@ class AbstractPostable : public Window {
 // TEMPLATE IMPLEMENTATION =========================================================================
 
 inline AbstractPostable::AbstractPostable(const int height, const int width, const int toprow,
-                                          const int leftcol, const std::string& title)
-    : Window(height, width, toprow, leftcol, title)
+                                          const int leftcol, const std::string& title, bool box)
+    : Window(height, width, toprow, leftcol, title, box)
 {
 }
 

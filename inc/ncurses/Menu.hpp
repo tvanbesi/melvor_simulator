@@ -8,7 +8,8 @@ class Menu : public AbstractPostable {
     using traits = PostableTraits<menu_pointer>;
 
     Menu(const int height, const int width, const int toprow, const int leftcol,
-         const traits::element_param_container& items_params, const std::string& title = "");
+         const traits::element_param_container& items_params, const std::string& title = "",
+         bool box = true);
     ~Menu() noexcept;
 
     void post() const override;
